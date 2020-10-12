@@ -58,6 +58,7 @@ jobs:
         run: |
           BRANCH=${GITHUB_REF##*/}
           DEST=$([ "$BRANCH" == "main" ] && echo "." || echo "preview/$BRANCH")
+          mv package.json _package.json # only required for this repo
           npm i cleanup-gh-pages-previews
           git remote set-url origin https://git:${GITHUB_TOKEN}@github.com/Xiphe/example-ghpage-feature-preview.git
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
