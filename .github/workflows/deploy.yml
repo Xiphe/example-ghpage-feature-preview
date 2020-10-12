@@ -1,0 +1,59 @@
+name: deploy
+
+on: push
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v1
+      - uses: actions/setup-node@v1
+        with:
+          node-version: 12.x
+      - uses: actions/setup-ruby@v1
+        with:
+          ruby-version: "2.x"
+
+      - uses: actions/cache@v2
+        id: bundle-v1
+        with:
+          path: vendor/bundle
+          key: ${{ runner.os }}-gems-${{ hashFiles('**/Gemfile.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-gems-
+
+      - uses: actions/cache@v2
+        id: npm-v1
+        with:
+          path: |
+            ~/.npm
+            node_modules
+          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node-
+
+      - name: bundle install
+        if: steps.bundle-v1.outputs.cache-hit != 'true'
+        run: |
+          bundle config path vendor/bundle
+          bundle install --jobs 4 --retry 3
+
+      - name: npm install
+        if: steps.npm-v1.outputs.cache-hit != 'true'
+        run: |
+          npm ci
+
+      - name: jekyll build
+        run: |
+          bundle config path vendor/bundle
+          bundle exec jekyll build
+          touch _site/.nojekyll
+
+      - name: deploy gh-pages
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          BRANCH=${GITHUB_REF##*/}
+          DEST=$([ "$BRANCH" == "main" ] && echo "." || echo "preview/$BRANCH")
+          git remote set-url origin https://git:${GITHUB_TOKEN}@github.com/Xiphe/example-ghpage-feature-preview.git
+          npx --no-install gh-pages -u "github-actions-bot <support+actions@github.com>" --branch gh-pages --dist _site --dest $DEST --add --dotfiles
