@@ -1,6 +1,12 @@
 name: deploy
 
-on: push
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
 
 jobs:
   deploy:
@@ -45,7 +51,7 @@ jobs:
 
       - name: jekyll build
         run: |
-          BRANCH=${GITHUB_REF##*/}
+          BRANCH=${GITHUB_HEAD_REF##*/}
           PROD_URL=/example-ghpage-feature-preview
           BASE_URL=$([ "$BRANCH" == "main" ] && echo $PROD_URL || echo "$PROD_URL/preview/$BRANCH")
           bundle config path vendor/bundle
@@ -56,11 +62,12 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          BRANCH=${GITHUB_REF##*/}
+          BRANCH=${GITHUB_HEAD_REF##*/}
           DEST=$([ "$BRANCH" == "main" ] && echo "." || echo "preview/$BRANCH")
           git remote set-url origin https://git:${GITHUB_TOKEN}@github.com/Xiphe/example-ghpage-feature-preview.git
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git config user.name "github-actions[bot]"
+          npx gh-pages-clean
           npx --no-install gh-pages\
               --branch gh-pages\
               --dist _site\
@@ -68,3 +75,11 @@ jobs:
               --before-add ./_beforeAdd.js\
               --add\
               --dotfiles
+
+      - name: decorate PR
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          if [ "$GITHUB_EVENT_NAME" == "pull_request" ]; then
+            npx decorate-gh-pr -r -c "<a href=\"https://xiphe.net/example-ghpage-feature-preview/preview/${GITHUB_HEAD_REF##*/}\"><img src=\"https://img.shields.io/badge/published-gh--pages-green\" alt=\"published to gh-pages\" /></a><hr />"
+          fi
