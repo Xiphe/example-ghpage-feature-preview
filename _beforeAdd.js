@@ -21,13 +21,13 @@ async function tryReaddir(folder) {
 
 /** @param git {import("gh-pages/lib/git")} */
 module.exports = async (git) => {
-  await git.exec("remote", "set-branches", REMOTE, "*");
+  await git.exec("remote", "set-branches", GIT_REMOTE, "*");
   await git.fetch("--all");
   await git.exec(
     "branch",
     "-r",
     "--no-merged",
-    `${REMOTE}/${PRODUCTION_BRANCH}`
+    `${GIT_REMOTE}/${PRODUCTION_BRANCH}`
   );
 
   const previewFolder = path.join(git.cwd, PREVIEW_FOLDER);
@@ -35,7 +35,7 @@ module.exports = async (git) => {
     .trim()
     .split("\n")
     .map((branchName) =>
-      branchName.trim().replace(new RegExp(`^${REMOTE}\/`, ""), "")
+      branchName.trim().replace(new RegExp(`^${GIT_REMOTE}\/`, ""), "")
     );
   const previews = await tryReaddir(previewFolder);
   const mergedOrDeletedPreviews = previews.filter(
