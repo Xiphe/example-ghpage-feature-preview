@@ -78,8 +78,8 @@ jobs:
 
       - name: decorate PR
         env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           if [ "$GITHUB_EVENT_NAME" == "pull_request" ]; then
-            npx decorate-gh-pr -r -c "<a href=\"https://xiphe.net/example-ghpage-feature-preview/preview/${GITHUB_HEAD_REF##*/}\"><img src=\"https://img.shields.io/badge/published-gh--pages-green\" alt=\"published to gh-pages\" /></a><hr />"
+            npx --no-install decorate-gh-pr -r -c "<a href=\"https://xiphe.net/example-ghpage-feature-preview/preview/${GITHUB_HEAD_REF##*/}\"><img src=\"https://img.shields.io/badge/published-gh--pages-green\" alt=\"published to gh-pages\" /></a><hr />"
           fi
