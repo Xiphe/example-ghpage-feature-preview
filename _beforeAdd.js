@@ -1,8 +1,11 @@
 const { readdir, rmdir } = require("fs").promises;
 const path = require("path");
 
-const REMOTE = "origin";
-const PRODUCTION_BRANCH = "main";
+const {
+  GIT_REMOTE = "origin",
+  PRODUCTION_BRANCH = "main",
+  PREVIEW_FOLDER = "preview",
+} = process.env;
 
 /**
  * @param {string} folder
@@ -27,7 +30,7 @@ module.exports = async (git) => {
     `${REMOTE}/${PRODUCTION_BRANCH}`
   );
 
-  const previewFolder = path.join(git.cwd, "preview");
+  const previewFolder = path.join(git.cwd, PREVIEW_FOLDER);
   const unmergedRemoteBranches = git.output
     .trim()
     .split("\n")
