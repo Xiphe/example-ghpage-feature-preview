@@ -56,8 +56,9 @@ jobs:
           BRANCH=${GITHUB_REF##*/}
           DEST=$([ "$BRANCH" == "main" ] && echo "." || echo "preview/$BRANCH")
           git remote set-url origin https://git:${GITHUB_TOKEN}@github.com/Xiphe/example-ghpage-feature-preview.git
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git config user.name "github-actions[bot]"
           npx --no-install gh-pages\
-              -u "github-actions <support+actions@github.com>"\
               --branch gh-pages\
               --dist _site\
               --dest $DEST\
