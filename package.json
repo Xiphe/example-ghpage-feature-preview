@@ -1,6 +1,6 @@
 {
   "name": "cleanup-gh-pages-previews",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "clean up previews of merged and deleted branches",
   "main": "_beforeAdd.js",
   "devDependencies": {
