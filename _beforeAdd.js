@@ -13,7 +13,7 @@ const {
  */
 async function tryReaddir(folder) {
   try {
-    await readdir(folder);
+    return await readdir(folder);
   } catch (err) {
     return [];
   }
