@@ -4,6 +4,18 @@ const path = require("path");
 const REMOTE = "origin";
 const PRODUCTION_BRANCH = "main";
 
+/**
+ * @param {string} folder
+ * @returns {string[]}
+ */
+async function tryReaddir(folder) {
+  try {
+    await readdir(folder);
+  } catch (err) {
+    return [];
+  }
+}
+
 /** @param git {import("gh-pages/lib/git")} */
 module.exports = async (git) => {
   await git.exec("remote", "set-branches", REMOTE, "*");
@@ -22,7 +34,7 @@ module.exports = async (git) => {
     .map((branchName) =>
       branchName.trim().replace(new RegExp(`^${REMOTE}\/`, ""), "")
     );
-  const previews = await readdir(previewFolder);
+  const previews = await tryReaddir(previewFolder);
   const mergedOrDeletedPreviews = previews.filter(
     (previewName) => !unmergedRemoteBranches.includes(previewName)
   );
