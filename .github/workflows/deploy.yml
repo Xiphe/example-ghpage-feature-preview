@@ -45,8 +45,11 @@ jobs:
 
       - name: jekyll build
         run: |
+          BRANCH=${GITHUB_REF##*/}
+          PROD_URL=/example-ghpage-feature-preview
+          BASE_URL=$([ "$BRANCH" == "main" ] && echo $PROD_URL || echo "$PROD_URL/preview/$BRANCH")
           bundle config path vendor/bundle
-          bundle exec jekyll build
+          bundle exec jekyll build --baseurl $BASE_URL
           touch _site/.nojekyll
 
       - name: deploy gh-pages
