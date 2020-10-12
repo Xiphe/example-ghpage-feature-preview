@@ -56,6 +56,9 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
+          mv package.json _package.json # only required for this repo
+          npm i cleanup-gh-pages-previews
+          mv _package.json package.json # only required for this repo
           BRANCH=${GITHUB_REF##*/}
           DEST=$([ "$BRANCH" == "main" ] && echo "." || echo "preview/$BRANCH")
           git remote set-url origin https://git:${GITHUB_TOKEN}@github.com/Xiphe/example-ghpage-feature-preview.git
@@ -65,6 +68,6 @@ jobs:
               --branch gh-pages\
               --dist _site\
               --dest $DEST\
-              --before-add ./_beforeAdd.js
+              --before-add cleanup-gh-pages-previews\
               --add\
               --dotfiles
