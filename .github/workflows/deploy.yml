@@ -58,6 +58,7 @@ jobs:
         run: |
           BRANCH=${GITHUB_REF##*/}
           DEST=$([ "$BRANCH" == "main" ] && echo "." || echo "preview/$BRANCH")
+          npm i cleanup-gh-pages-previews
           git remote set-url origin https://git:${GITHUB_TOKEN}@github.com/Xiphe/example-ghpage-feature-preview.git
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git config user.name "github-actions[bot]"
@@ -65,6 +66,6 @@ jobs:
               --branch gh-pages\
               --dist _site\
               --dest $DEST\
-              --before-add ./_beforeAdd.js\
+              --before-add cleanup-gh-pages-previews
               --add\
               --dotfiles
